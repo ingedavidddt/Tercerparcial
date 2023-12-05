@@ -5,19 +5,14 @@ Created on Mon Dec  4 20:53:29 2023
 @author: david
 """
 import tkinter as tk
+
+from PIL import Image, ImageTk
 global cuadro_resultado
 
 cuadro_opciones = None
 cuadro_resultado = None
 cuadro_agentes = None
 cuadro_Habilidades = None
-
-
-
-
-
-
-
 
 
 # Preguntas adicionales con opciones predefinidas
@@ -194,7 +189,7 @@ def cargar_ventana2():
     etiqueta_RolSugerido = tk.Label(frame_2, text="segun tus respuestas anteriores el rol que mejor se adapta a ti es:", font=("Helvetica", 10))
     etiqueta_RolSugerido.pack(pady=10)
 
-    etiqueta_MostrarRol = tk.Label(frame_2, text = Rol_Determinado, font=("Helvetica", 10))
+    etiqueta_MostrarRol = tk.Label(frame_2, text = Rol_Determinado, font=("Helvetica", 40))
     etiqueta_MostrarRol.pack(pady=1)
 
     etiqueta_instruciones = tk.Label(frame_2, text="a continuacion se muestran las caracteristicas de todos los roles por si crees \nque el rol encontrado no es lo tuyo, despues presiona " + "continuar" + " para escoger tu agente ", font=("Helvetica", 10))
@@ -224,7 +219,7 @@ def cargar_ventana2():
     cuadro_resultado.pack(pady=10)
      
     mostrar_funcion_rol()      
-    boton_EscogerAgenteSegunRol = tk.Button(frame_2, text="Continuar", command=cargar_ventana3)
+    boton_EscogerAgenteSegunRol = tk.Button(frame_2, text="Continuar", font=("Helvetica", 40), command=cargar_ventana3)
 
     boton_EscogerAgenteSegunRol.pack(pady=10)
     
@@ -253,9 +248,16 @@ def cargar_ventana3():
     
     mostrar_agentes_por_rol(RolSeleccionado)
 
+    
+
+
     # Crear la caja de opciones para seleccionar el agente
 
     agentes_por_defecto = obtener_agentes_por_rol(RolSeleccionado)
+    
+    
+    etiqueta_SeleccionarAgente = tk.Label(frame_3, text="Selecciona el agente de tu prteferencia", font=("Helvetica", 20))
+    etiqueta_SeleccionarAgente.pack(pady=10)
 
     cuadro_agentes = tk.StringVar(frame_3)
     cuadro_agentes.set(agentes_por_defecto[0])  # Establecer un valor predeterminado
@@ -273,16 +275,17 @@ def cargar_ventana3():
     
     mostrar_caracteristicas_agente()
     
-    boton_AgenteSeleccionado = tk.Button(frame_3, text="Continuar", command=cargar_ventana4)
+    boton_AgenteSeleccionado = tk.Button(frame_3, text="Continuar", font=("Helvetica", 40), command=cargar_ventana4)
 
     boton_AgenteSeleccionado.pack(pady=10)
     
 
-
-    
 def cargar_ventana4():
     
     global agenteSeleccioado
+    global label_imagenAgente
+    global imagen_path
+    global imagen
     
     agenteSeleccioado = cuadro_agentes.get()
     
@@ -291,14 +294,48 @@ def cargar_ventana4():
     # Mostrar el nuevo frame
     frame_4.pack(pady=20)
     
-    etiqueta_Agente_seleccioado = tk.Label(frame_4, text="el agente que mejor se adapta a ti es", font=("Helvetica", 10))
+    etiqueta_Agente_seleccioado = tk.Label(frame_4, text="el agente que mejor se adapta a ti es", font=("Helvetica", 30))
     etiqueta_Agente_seleccioado.pack(pady=10)
-    etiqueta_Agente_seleccioado = tk.Label(frame_4, text=agenteSeleccioado , font=("Helvetica", 10))
-    etiqueta_Agente_seleccioado.pack(pady=10)
+    etiqueta_Agente_seleccioado2 = tk.Label(frame_4, text=agenteSeleccioado , font=("Helvetica", 30))
+    etiqueta_Agente_seleccioado2.pack(pady=10)
     
-    boton_Salir = tk.Button(frame_3, text="Continuar", command = salir)
+
+    nombres_imagenes = {
+        "Brimstone" : "imagenes\Brimstone.png", 
+        "Jett" : "imagenes\Jett.png",
+        "Omen" :"imagenes\Omen.png",
+        "Phoenix" :"imagenes\Phoenix.jpg",
+        "Raze" :"imagenes\Raze.jpg",
+        "Reyna" :"imagenes\Reyna.jpg",
+        "Sage" :"imagenes\Sage.png",
+        "Sova" :"imagenes\Sova.png",
+        "Viper":"imagenes\Viper.png",
+        "Cypher":"imagenes\Cypher.png"
+        
+        
+        }
+
+    if agenteSeleccioado in nombres_imagenes:
+        nombre_imagen = nombres_imagenes[agenteSeleccioado]
+        
+        
+        print("simon")
+    else:
+        print(f"La clave '{agenteSeleccioado}' no se encuentra en el diccionario.")
+
+    print(nombre_imagen)
+    
+    imagen_path = nombre_imagen
+    imagen = cargar_imagen(imagen_path)
+    
+    label_imagenAgente = tk.Label(frame_4, image=imagen)
+    label_imagenAgente.pack()
+    
+    
+    boton_Salir = tk.Button(frame_4, text="Salir", font=("Helvetica", 40), command = salir)
 
     boton_Salir.pack(pady=10)
+    
     
 def salir():
     ventana.destroy()
@@ -464,14 +501,22 @@ def obtener_caracteristicas_agente(agente):
     caracteristicas = f"Rol: {rol_agente}\nHabilidades: {habilidades_agente}"
     
     return caracteristicas
+
+
+def cargar_imagen(ruta):
+    imagen = Image.open(ruta)
+    imagen = ImageTk.PhotoImage(imagen)
+    return imagen
+
+
 #----------------------------------------------------------------------------------------------------------
 
 # Crear la ventana
 ventana = tk.Tk()
 ventana.title("Choose your Agent")
 
-ventana.minsize(900, 900)  # Tamaño mínimo de la ventana: ancho=300, altura=200
-ventana.maxsize(1200, 1200)  # Tamaño máximo de la ventana: ancho=800, altura=600
+ventana.minsize(1200, 900)  # Tamaño mínimo de la ventana: ancho=300, altura=200
+ventana.maxsize(1400, 1200)  # Tamaño máximo de la ventana: ancho=800, altura=600
 
 # Ajustar el tamaño de la ventana directamente
 #ventana.geometry("400x400")  # Ajusta las dimensiones según tus necesidades
@@ -492,9 +537,17 @@ frameInicial.pack(pady=20)
 etiqueta_titulo = tk.Label(frameInicial, text="Escoge tu agente", font=("Helvetica", 40))
 etiqueta_titulo.pack(pady=10)
 
+# Cargar una imagen
+
+imagen_path = "imagenes\PortadaNeon.webp"
+imagen = cargar_imagen(imagen_path)
+
+label_imagen = tk.Label(frameInicial, image=imagen)
+label_imagen.pack()
+
 
 # Botón para obtener el rol seleccionado
-boton_Comenzar = tk.Button(frameInicial, text="Comenzar", command=cargar_ventana1)
+boton_Comenzar = tk.Button(frameInicial, text="Comenzar", font=("Helvetica", 40), command=cargar_ventana1)
 boton_Comenzar.pack(pady=10)
 
 
@@ -521,7 +574,7 @@ for i, pregunta in enumerate(preguntas_iniciales):
     menu_opciones.pack(pady=5)
     cuadros_opciones.append(cuadro_opciones)
             
-boton_escogerRol = tk.Button(frame_1, text="Comenzar", command=cargar_ventana2)
+boton_escogerRol = tk.Button(frame_1, text="Comenzar", font=("Helvetica", 40), command=cargar_ventana2)
 boton_escogerRol.pack(pady=10)
         
     #-----------------------------------------------------------------------------------------------------------------------
@@ -572,7 +625,7 @@ agentes_por_defecto = obtener_agentes_por_rol(rol)
 
 cuadro_agentes = tk.StringVar(frame_3)
 
-
+etiqueta_SeleccionarAgente = tk.Label()
 
 # Cuadro de texto para mostrar la función del rol
 cuadro_Habilidades = tk.Text()
@@ -587,6 +640,11 @@ frame_4.pack_forget()
 
 etiqueta_Agente_seleccioado = tk.Label()
 etiqueta_Agente_seleccioado2 = tk.Label()
+
+
+label_imagenAgente = tk.Label()
+
+
 boton_Salir = tk.Button()
 
 ventana.mainloop()
